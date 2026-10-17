@@ -1,0 +1,65 @@
+
+name: Validate Agency Standards
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Check repository standards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify required files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            "CLAUDE.md"
+            ".gitignore"
+            ".claude/skills/plan/SKILL.md"
+            ".claude/skills/implement/SKILL.md"
+            ".claude/skills/agency-review/SKILL.md"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error::Required file is missing: $file"
+              exit 1
+            fi
+            echo "Found: $file"
+          done
+
+      - name: Verify skill metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for skill in plan implement agency-review; do
+            file=".claude/skills/$skill/SKILL.md"
+
+            if ! grep -Fxq -- "---" "$file"; then
+              echo "::error::Missing YAML frontmatter delimiter: $file"
+              exit 1
+            fi
+
+            if ! grep -Fxq -- "name: $skill" "$file"; then
+              echo "::error::Expected skill name '$skill' in $file"
+              exit 1
+            fi
+
+            if ! grep -Eq '^description: .+' "$file"; then
+              echo "::error::Missing skill description: $file"
+              exit 1
+            fi
+
+            echo "Validated skill: $skill"
+          done
