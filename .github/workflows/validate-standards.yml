@@ -10,7 +10,7 @@ on:
 
 jobs:
   validate:
-    name: Check repository standards
+    name: Check repository standards and template
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +28,10 @@ jobs:
             ".claude/skills/plan/SKILL.md"
             ".claude/skills/implement/SKILL.md"
             ".claude/skills/agency-review/SKILL.md"
+            "templates/client-project/CLAUDE.md"
+            "templates/client-project/README.md"
+            "templates/client-project/.gitignore"
+            "templates/client-project/.env.example"
           )
 
           for file in "${required_files[@]}"; do
@@ -63,3 +67,25 @@ jobs:
 
             echo "Validated skill: $skill"
           done
+
+      - name: Verify template safety
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! grep -Fxq -- '.env' templates/client-project/.gitignore; then
+            echo "::error::Template .gitignore must exclude .env"
+            exit 1
+          fi
+
+          if ! grep -Fxq -- '!.env.example' templates/client-project/.gitignore; then
+            echo "::error::Template .gitignore must allow .env.example"
+            exit 1
+          fi
+
+          if grep -Eq '^[[:space:]]*[A-Za-z_][A-Za-z0-9_]*=.+$' templates/client-project/.env.example; then
+            echo "::error::Review .env.example for values that may be real credentials"
+            exit 1
+          fi
+
+          echo "Template safety checks passed"
