@@ -1,5 +1,5 @@
-﻿---
-name: review
+---
+name: agency-review
 description: Review code changes for correctness, security, regressions, maintainability, and test coverage. Use after implementation or before committing code.
 ---
 

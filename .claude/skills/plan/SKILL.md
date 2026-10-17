@@ -1,4 +1,4 @@
-﻿---
+---
 name: plan
 description: Analyze a software task and produce an implementation plan before changing code. Use when starting a feature, fixing a bug, or evaluating a technical change.
 ---

@@ -1,4 +1,4 @@
-﻿---
+---
 name: implement
 description: Implement an explicitly approved software plan in small, verifiable steps. Use after planning when the user approves implementation or requests a clearly scoped code change.
 ---
@@ -34,6 +34,7 @@ After implementation:
 1. Inspect the diff for unintended changes.
 2. Run relevant tests and available lint, type, or build checks.
 3. Fix failures caused by your changes where possible.
+4. Report pre-existing failures separately; do not fix unrelated failures without approval.
 4. Clearly report checks that could not be run and why.
 5. Identify remaining risks or limitations.
 
